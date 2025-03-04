@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie Recommendation App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f9;
+      }
+
+      header {
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+      }
+
+      header h1 {
+        margin: 0;
+      }
+
+      .container {
+        padding: 2rem;
+      }
+
+      .movie-input {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .btn {
+        background-color: #333;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #555;
+      }
+
+      .movies-list {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .movie-card {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        width: calc(33.333% - 20px);
+        box-sizing: border-box;
+        transition: transform 0.3s;
+      }
+
+      .movie-card:hover {
+        transform: scale(1.05);
+      }
+
+      .movie-card h3 {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+      }
+
+      .movie-card p {
+        font-size: 14px;
+        color: #555;
+      }
+
+      .footer {
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Movie Recommendation App</h1>
+    </header>
+
+    <div class="container">
+      <h2>Search for a Movie</h2>
+      <input
+        type="text"
+        class="movie-input"
+        id="movieInput"
+        placeholder="Enter a movie name..."
+      />
+      <button class="btn" onclick="getMovieRecommendations()">
+        Get Recommendations
+      </button>
+
+      <h3>Recommended Movies:</h3>
+      <div id="movieRecommendations" class="movies-list"></div>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2025 Movie Recommendation App</p>
+    </div>
+
+    <script>
+      // Fetch all available movies
+      async function getAllMovies() {
+        const response = await fetch("http://127.0.0.1:5000/api/movies");
+        const data = await response.json();
+        return data.arr;
+      }
+
+      // Function to get recommendations for a specific movie
+      async function getMovieRecommendations() {
+        const movieName = document
+          .getElementById("movieInput")
+          .value.toLowerCase()
+          .trim();
+        if (!movieName) {
+          alert("Please enter a movie name!");
+          return;
+        }
+
+        const response = await fetch(
+          `http://127.0.0.1:5000/api/similarity/${movieName}`
+        );
+        const data = await response.json();
+
+        const recommendationsContainer = document.getElementById(
+          "movieRecommendations"
+        );
+        recommendationsContainer.innerHTML = ""; // Clear previous results
+
+        if (data.movies.length === 0) {
+          recommendationsContainer.innerHTML =
+            "<p>No recommendations found. Try another movie!</p>";
+        } else {
+          data.movies.forEach((movie) => {
+            const movieCard = document.createElement("div");
+            movieCard.classList.add("movie-card");
+            movieCard.innerHTML = `
+                    <h3>${movie}</h3>
+                    <p>Recommended based on your input movie.</p>
+                `;
+            recommendationsContainer.appendChild(movieCard);
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
