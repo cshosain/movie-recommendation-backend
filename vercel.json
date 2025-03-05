@@ -2,22 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/index.py",
+      "src": "api/app.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/api/movies",
-      "dest": "api/index.py"
+      "dest": "api/app.py"
     },
     {
       "src": "/api/similarity/(.*)",
-      "dest": "api/index.py"
+      "dest": "api/app.py"
     },
     {
       "src": "/(.*)",
-      "dest": "/templates/index.html"
+      "dest": "/api/app.py"
     }
   ],
   "env": {
